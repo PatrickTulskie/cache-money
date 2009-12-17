@@ -22,16 +22,22 @@ module Cash
       # User.find(:first, ...), User.find_by_foo(...), User.find(:all, ...), User.find_all_by_foo(...)
       def find_every_with_cache(options)
         Query::Select.perform(self, options, scope(:find))
+      rescue
+        find_every_without_cache(options)
       end
 
       # User.find(1), User.find(1, 2, 3), User.find([1, 2, 3]), User.find([])
       def find_from_ids_with_cache(ids, options)
         Query::PrimaryKey.perform(self, ids, options, scope(:find))
+      rescue
+        find_from_ids_without_cache(ids, options)
       end
 
       # User.count(:all), User.count, User.sum(...)
       def calculate_with_cache(operation, column_name, options = {})
         Query::Calculation.perform(self, operation, column_name, options, scope(:find))
+      rescue
+        calculate_without_cache(operation, column_name, options = {})
       end
     end
   end
