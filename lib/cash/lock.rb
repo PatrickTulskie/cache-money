@@ -28,6 +28,13 @@ module Cash
           response = @cache.add("lock/#{key}", Process.pid, lock_expiry)
           return if response == "STORED\r\n"
           raise Error if count == retries - 1
+        rescue MemCache::MemCacheError => e
+          if e.message == 'No connection to server'
+            RAILS_DEFAULT_LOGGER.info("MemCacheError (#{e.message}): Unable to release lock on #{key}")
+            return
+          else
+            raise
+          end
         end
         exponential_sleep(count) unless count == retries - 1
       end
@@ -36,6 +43,8 @@ module Cash
 
     def release_lock(key)
       @cache.delete("lock/#{key}")
+    rescue MemCache::MemCacheError => e
+      RAILS_DEFAULT_LOGGER.info("MemCacheError (#{e.message}): Unable to release lock on #{key}")
     end
 
     def exponential_sleep(count)

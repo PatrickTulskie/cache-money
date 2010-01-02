@@ -15,6 +15,8 @@ module Cash
 
     def method_missing(method, *args, &block)
       @remote_cache.send(method, *args, &block)
+    rescue MemCache::MemCacheError => e
+      RAILS_DEFAULT_LOGGER.info("MemCacheError (#{e.message}): Unable to perform #{method} for #{args.first}.")
     end
   end
 
