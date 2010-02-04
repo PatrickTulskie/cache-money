@@ -26,11 +26,11 @@ module Cash
     def acquire_lock(key, lock_expiry = DEFAULT_EXPIRY, retries = DEFAULT_RETRY, initial_wait = INITIAL_WAIT)
       retries.times do |count|
         response = @cache.add("lock/#{key}", Process.pid, lock_expiry)
-        return if response == "STORED\r\n"
+        return if ((response == "STORED\r\n") || (response == "SERVER_UNAVAILBLE\r\n"))
         exponential_sleep(count, initial_wait) unless count == retries - 1
       end
       debug_lock(key)
-      raise Error, "Couldn't acquire memcache lock for: #{key}   server: #{@cache.get_server_for_key(key)}"
+      raise Error, "Couldn't acquire memcache lock for: #{key}   server: #{@cache.get_server_for_key("lock/#{key}")}"
     end
 
     def release_lock(key)

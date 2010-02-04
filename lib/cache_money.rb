@@ -31,6 +31,10 @@ class ActiveRecord::Base
     include Cash unless ancestors.include?(Cash)
     Cash::Config.create(self, options)
   end
+  
+  def <=>(other)
+    self.id == other.id ? 0 : (self.id < other.id ? -1 : 1)
+  end
 end
 
 module Cash

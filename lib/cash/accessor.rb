@@ -40,7 +40,8 @@ module Cash
       end
 
       def add(key, value, options = {})
-        if repository.add(cache_key(key), value, options[:ttl] || cache_config.ttl, options[:raw]) == "NOT_STORED\r\n"
+        response = repository.add(cache_key(key), value, options[:ttl] || cache_config.ttl, options[:raw])
+        if (response == "NOT_STORED\r\n") || (response == "SERVER_UNAVAILBLE\r\n")
           yield if block_given?
         end
       end
