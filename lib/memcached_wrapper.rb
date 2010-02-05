@@ -19,7 +19,7 @@ Rails.logger.info("cache-money: Memcached installed") if defined? Rails
     # DEFAULTS = { :servers => '127.0.0.1:11211' }
     DEFAULTS = { }
 
-    attr_reader :logger, :server_status
+    attr_reader :logger
 
     # See Memcached#new for details.
     def initialize(*args)
@@ -41,9 +41,6 @@ Rails.logger.info("cache-money: Memcached installed") if defined? Rails
       @debug  = opts[:debug]
       
       super(servers, opts)
-      
-      # Prime the server status tracker, defaulting to up
-      @server_status = self.servers.inject({}) { |server_hash, server| server_hash[server] = 'up'; server_hash }
     end
 
     def symbolize_keys(opts)
