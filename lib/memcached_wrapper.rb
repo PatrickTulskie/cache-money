@@ -234,7 +234,7 @@ Rails.logger.info("cache-money: Memcached installed") if defined? Rails
     private
     
     def not_stored_or_server_unavailable(error)
-      (error && error.to_s =~ /Connection refused/) ? server_unavailable : not_stored
+      (error.to_s =~ /Connection refused/ || error.is_a?(Memcached::ServerIsMarkedDead)) ? server_unavailable : not_stored
     end
 
     def stored
